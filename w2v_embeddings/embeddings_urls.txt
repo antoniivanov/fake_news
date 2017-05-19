@@ -1,0 +1,5 @@
+word2vec - trained on bgwiki:
+https://drive.google.com/open?id=0B_grZ_5V1lYtTHBBWTBBQXdwbGs
+
+word2vec - trained on bgwiki + all_dataset (100,000 news articles)
+https://drive.google.com/open?id=0B_grZ_5V1lYtbVA1cWpNaGFDLW8
