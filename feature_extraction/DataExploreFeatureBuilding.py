@@ -246,10 +246,4 @@ train_data_extra_features = append_new_columns(train_data_extra_features,
 # In[221]:
 
 print("Saving at {}".format(args.output_path))
-train_data_extra_features.to_csv(args.output_path)
-
-
-# In[ ]:
-
-
-
+train_data_extra_features.to_csv(args.output_path, encoding='utf-8')
