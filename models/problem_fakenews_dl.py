@@ -10,7 +10,7 @@ from keras.regularizers import l1, l2
 
 from keras.models import Sequential
 from keras.layers import Dense, Input, Flatten, Embedding, Dropout, Activation
-from keras.layers.merge import concatenate, Concatenate
+from keras.layers.merge import concatenate, Concatenate, maximum
 from keras.models import Model
 from keras.layers.convolutional import Conv1D, MaxPooling1D
 from sklearn.model_selection import train_test_split
@@ -85,30 +85,28 @@ def build_model(shapes):
 
     '''
     x1_input = Input(shape=(shapes[1][1],))
-    x1 = Dense(11, activation='tanh')(x1_input)
-    x1 = Dropout(0.8)(x1)
-    x1 = Dense(2, activation='softmax')(x1)
+    x1 = Dense(32, activation='tanh')(x1_input)
     '''
 
     x2_input = Input(shape=(shapes[2][1], shapes[2][2]))
     x2 = Conv1D(32, 5, activation='relu')(x2_input)
-    x2 = Conv1D(64, 10, activation='relu')(x2)
-    x2 = Conv1D(128, 10, activation='relu')(x2)
+    x2 = Conv1D(32, 10, activation='relu')(x2)
     x2 = MaxPooling1D(5)(x2)
     x2 = Flatten()(x2)
+    x2 = Dense(32, activation='relu')(x2)
 
     x3_input = Input(shape=(shapes[3][1], shapes[3][2]))
-    x3 = Conv1D(64, 5, activation='relu')(x3_input)
+    x3 = Conv1D(128, 20, activation='relu')(x3_input)
     x3 = MaxPooling1D(5)(x3)
-    x3 = Conv1D(128, 10, activation='relu')(x3)
-    x3 = MaxPooling1D(5)(x3)
-    x3 = Conv1D(256, 10, activation='relu')(x3)
+    x3 = Conv1D(256, 20, activation='relu')(x3)
     x3 = MaxPooling1D(5)(x3)
     x3 = Flatten()(x3)
+    x3 = Dense(32, activation='relu')(x3)
 
-    xmerged = Concatenate()([x2, x3])
+    xmerged = maximum([x2, x3])
+    #xmerged = x3
 
-    xmerged = Dense(32, activation='tanh')(xmerged)
+    #xmerged = Dense(32, activation='tanh')(xmerged)
     x1 = Dropout(0.8)(xmerged)
     xmerged = Dense(2, activation='softmax')(xmerged)
 
@@ -151,13 +149,17 @@ x2_data = np.load('./data/embedded_titles_100.npy')
 
 logger.info('processing x3: content')
 x3_data = np.load('./data/embedded_content_100.npy')
+# trimming
+x3_data = x3_data[:, :600, :]
 
 logger.info('build model')
 model = get_model(model_name, shapes=[y_data.shape, x1_data.shape, x2_data.shape, x3_data.shape])
 
+model.summary()
+
 logger.info('compile model')
 model.compile(loss='categorical_crossentropy',
-              optimizer=Adadelta(lr=0.1),
+              optimizer=Adadelta(lr=0.2),
               metrics=['accuracy'])
 
 # prep the validation split
@@ -165,11 +167,10 @@ x1_train, x1_val, y_train, y_val = train_test_split(x1_data.as_matrix(), y_data,
 x2_train, x2_val, _, _ = train_test_split(x2_data, y_data, test_size=0.1, random_state=seed)
 x3_train, x3_val, _, _ = train_test_split(x3_data, y_data, test_size=0.1, random_state=seed)
 
-pdb.set_trace()
-
 model.fit([x2_train, x3_train], y_train,
           validation_data=([x2_val, x3_val], y_val),
-          epochs=100,
+          epochs=500,
           batch_size=128)
 
-pdb.set_trace()
+logger.info('Done')
+
