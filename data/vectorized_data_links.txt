@@ -1,0 +1,5 @@
+vectorized article content w2v_news x100
+https://drive.google.com/open?id=0B_grZ_5V1lYtU0Vkbi1BWldMc2c
+
+vectorized article titles w2v_news x100
+https://drive.google.com/open?id=0B_grZ_5V1lYtWkdIYnZFUEFJTU0
