@@ -1,2 +1,4 @@
 
 *.csv
+*.npy
+w2v_embeddings/bgwiki_word2vec_news_100
