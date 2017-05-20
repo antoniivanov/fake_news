@@ -1,6 +1,7 @@
 import re
 import pandas as pd
 import argparse
+from numpy import *
 
 parser = argparse.ArgumentParser(
      prog='feature_extract',
@@ -9,9 +10,8 @@ parser.add_argument('--train_data', type=str, default="./data/FN_Training_Set.cs
 
 args = parser.parse_args()
 
-print(args.train_data)
-
 train_data = pd.read_csv(args.train_data, encoding='windows-1251')
+train_data.fillna(value="", inplace=True)
 
 with open('bg_stopwords.txt', encoding='utf8') as f:
     stopwords = [x.strip() for x in f.readlines()]
@@ -79,3 +79,12 @@ def append_new_columns(df, column, name_func_dict):
         print("Adding col: {}".format(col))
         df[col] = df[column].apply(func)
     return 
+
+if __name__ == '__main__':
+	train_data_extra_features = append_new_columns(train_data, 
+                                                   "Content Title", 
+                                                   dict(zip(col_name('title'),func_list)))
+
+	train_data_extra_features = append_new_columns(train_data_extra_features, 
+                                                   "Content", 
+                                                   dict(zip(col_name('body'),func_list)))
