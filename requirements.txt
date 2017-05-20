@@ -1,0 +1,4 @@
+gensim
+argparse
+pandas
+sklearn
